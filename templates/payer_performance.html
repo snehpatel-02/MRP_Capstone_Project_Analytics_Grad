@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Payer Performance</h2>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card p-3 shadow-sm">
+            {{ payer_chart|safe }}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card p-3 shadow-sm">
+            <h5>Payer Summary Table</h5>
+            {{ payer_table|safe }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

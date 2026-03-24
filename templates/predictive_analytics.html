@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Predictive Analytics</h2>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h5 class="mb-3">Select Time Period</h5>
+            <form method="GET" action="/predictive-analytics">
+                <div class="mb-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date if start_date else '' }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date if end_date else '' }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ "{:,.2f}".format(total_actual) }}</div>
+            <div class="kpi-label">Total Actual</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ "{:,.2f}".format(total_forecast) }}</div>
+            <div class="kpi-label">Total Forecast</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm h-100">
+            <h5 class="mb-3">Claim Amount by Claim Type</h5>
+            {{ claim_type_chart|safe }}
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card p-3 shadow-sm h-100">
+            <h5 class="mb-3">Monthly Healthcare Claim Cost - Actual vs Forecast</h5>
+            {{ line_chart|safe }}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card p-4 shadow-sm">
+            <h5 class="mb-3">Forecast Methodology</h5>
+            <p>
+                Future claim costs were estimated using a Linear Regression model developed in Python.
+            </p>
+            <p>
+                The model was trained on historical monthly healthcare data to capture underlying trends and patterns.
+            </p>
+            <p>
+                <strong>Key predictors include:</strong><br>
+                TimeIndex – long-term trend<br>
+                TotalPatients – healthcare demand<br>
+                TotalEncounters – utilization levels
+            </p>
+            <p>
+                Forecasts were generated for the next six months to support forward-looking cost planning.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Opportunity Matrix</h2>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card p-3 shadow-sm">
+            {{ opportunity_chart|safe }}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card p-3 shadow-sm">
+            <h5>Opportunity Matrix Summary</h5>
+            {{ opportunity_table|safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}

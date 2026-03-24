@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Disease Forecast Analytics</h2>
+
+<div class="card p-3 shadow-sm">
+    <div id="chart" style="width: 100%; height: 500px;"></div>
+</div>
+
+<div class="card p-3 shadow-sm mt-4">
+    <h4>Summary Table</h4>
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Disease</th>
+                <th>SARIMA Forecast (Next 6 Months)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in summary %}
+            <tr>
+                <td>{{ row.DISEASE }}</td>
+                <td>{{ row.ForecastClaimAmount_Next6Months }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const actualData = {{ actual | tojson | safe }};
+    const forecastData = {{ forecast | tojson | safe }};
+
+    const diseases = [...new Set(actualData.map(d => d.DISEASE))];
+    const traces = [];
+
+    diseases.forEach(disease => {
+        const actualDiseaseData = actualData.filter(d => d.DISEASE === disease);
+        const forecastDiseaseData = forecastData.filter(d => d.DISEASE === disease);
+
+        traces.push({
+            x: actualDiseaseData.map(d => d.MonthStart),
+            y: actualDiseaseData.map(d => d.InsuranceClaimAmount),
+            mode: "lines",
+            name: `${disease} (Actual)`
+        });
+
+        traces.push({
+            x: forecastDiseaseData.map(d => d.MonthStart),
+            y: forecastDiseaseData.map(d => d.ForecastInsuranceClaimAmount),
+            mode: "lines",
+            name: `${disease} (SARIMA Forecast)`,
+            line: { dash: "dash" }
+        });
+    });
+
+    Plotly.newPlot("chart", traces, {
+        title: "Disease-wise Insurance Claim Forecast (SARIMA)",
+        xaxis: { title: "Month" },
+        yaxis: { title: "Claim Amount" },
+        template: "plotly_white"
+    }, {responsive: true});
+});
+</script>
+{% endblock %}

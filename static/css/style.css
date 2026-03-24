@@ -1,0 +1,45 @@
+body {
+    background-color: #f5f7fa;
+}
+
+h2 {
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.card-kpi {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+    padding: 20px;
+    background: white;
+}
+
+.kpi-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #4aa3ff;
+}
+
+.kpi-label {
+    font-size: 1rem;
+    color: #666;
+}
+
+.card {
+    border-radius: 12px;
+    border: none;
+}
+
+.shadow-sm {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08) !important;
+}
+
+.navbar {
+    background-color: #1f2937 !important;
+}
+
+.navbar a {
+    color: white !important;
+    font-weight: 500;
+}

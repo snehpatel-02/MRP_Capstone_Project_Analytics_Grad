@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Executive Overview Dashboard</h2>
+
+<div class="row g-4">
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ total_patients }}</div>
+            <div class="kpi-label">Total Patients</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ total_encounters }}</div>
+            <div class="kpi-label">Total Encounters</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ total_claim_cost }}</div>
+            <div class="kpi-label">Total Activity</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ coverage_pct }}%</div>
+            <div class="kpi-label">Coverage %</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card p-3 shadow-sm">
+            {{ encounters_chart|safe }}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card p-3 shadow-sm">
+            {{ payer_chart|safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}
