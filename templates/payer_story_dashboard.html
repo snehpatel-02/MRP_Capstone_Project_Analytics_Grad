@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4 section-gap">
+    <div class="col-lg-8">
+        <div class="story-card h-100">
+            <h2>Market Access Strategy – Payer Insights</h2>
+            <p class="story-text">
+                This dashboard connects healthcare scale, payer concentration, revenue leakage,
+                and strategic opportunity into one presentation-ready view.
+            </p>
+            <p class="story-text">
+                The story moves from overall demand, to dominant payers, to leakage hotspots,
+                and finally to the payer segments that deserve the strongest market access focus.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="final-card h-100">
+            <h5>Executive Message</h5>
+            <p class="final-text">
+                Payer prioritization should not depend only on volume. The strongest targets are
+                the ones where scale, denial pressure, and burden overlap.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 section-gap">
+    <div class="col-md-6 col-xl-3">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ total_patients }}</div>
+            <div class="kpi-label">Total Patients</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ total_encounters }}</div>
+            <div class="kpi-label">Total Encounters</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ total_activity }}</div>
+            <div class="kpi-label">Total Activity</div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card-kpi">
+            <div class="kpi-value">{{ coverage_pct }}%</div>
+            <div class="kpi-label">Coverage Percentage</div>
+        </div>
+    </div>
+</div>
+
+<div class="chart-card section-gap">
+    <h5>1. How is healthcare demand evolving?</h5>
+    <p class="chart-text">
+        This long-term trend sets the context for overall utilization and growing activity across the population.
+    </p>
+    {{ encounters_chart|safe }}
+    <div class="insight-text">
+        Insight: Encounter activity increases sharply in later periods, suggesting rising demand and stronger utilization intensity.
+    </div>
+</div>
+
+<div class="row g-4 section-gap">
+    <div class="col-xl-6">
+        <div class="chart-card h-100">
+            <h5>2. Who are the dominant payers?</h5>
+            <p class="chart-text">
+                Encounter concentration shows which payers influence the largest share of activity.
+            </p>
+            {{ top_payer_chart|safe }}
+            <div class="insight-text">
+                Insight: A small number of payers hold a major share of total encounters.
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="chart-card h-100">
+            <h5>3. Where are we losing revenue?</h5>
+            <p class="chart-text">
+                Denied amount highlights the payers creating the biggest reimbursement leakage.
+            </p>
+            {{ leakage_chart|safe }}
+            <div class="insight-text">
+                Insight: Several high-volume payers also contribute heavily to denied amount.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chart-card section-gap">
+    <h5>4. Which payers are strategic targets?</h5>
+    <p class="chart-text">
+        This matrix combines encounter scale, burden index, and denied amount to identify the most valuable payer targets.
+    </p>
+    {{ opportunity_chart|safe }}
+    <div class="insight-text">
+        Insight: Strategic priority comes from the overlap of scale, burden, and leakage rather than any one metric alone.
+    </div>
+</div>
+
+<div class="row g-4 section-gap">
+    <div class="col-12 col-xxl-6">
+        <div class="table-card h-100">
+            <h5>Payer Leakage Summary</h5>
+            <p class="chart-text">
+                Supporting payer-level cost, denied amount, and coverage metrics.
+            </p>
+            <div class="table-responsive">
+                {{ payer_table|safe }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xxl-6">
+        <div class="table-card h-100">
+            <h5>Opportunity Matrix Summary</h5>
+            <p class="chart-text">
+                Supporting payer-level burden and strategic opportunity measures.
+            </p>
+            <div class="table-responsive">
+                {{ opportunity_table|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="final-card">
+    <h5>Final Insight</h5>
+    <p class="final-text">
+        The best market access opportunities are concentrated in payer segments that combine high encounter volume,
+        meaningful denied amount, and elevated burden. These segments should guide contracting and access strategy decisions.
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Insurance Dashboard{% endblock %}
+
+{% block page_heading %}Insurance Company Dashboard{% endblock %}
+{% block page_subheading %}Claims, Forecast, and Payer Performance Overview{% endblock %}
+
+{% block content %}
+
+<!-- KPI ROW -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-value">{{ total_claims }}</div>
+            <div class="kpi-label">Total Claims</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-value">{{ total_actual }}</div>
+            <div class="kpi-label">Total Actual Claim Cost</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-value">{{ total_forecast }}</div>
+            <div class="kpi-label">Total Forecast Claim Cost</div>
+        </div>
+    </div>
+</div>
+
+<!-- CLAIM TREND -->
+<div class="dashboard-card">
+    <h4 class="section-title">Claim Cost Trend (Actual vs Forecast)</h4>
+    <p class="section-text">
+        This chart shows how claim costs have evolved over time and how they are expected to grow in the future.
+    </p>
+    {{ trend_chart|safe }}
+</div>
+
+<!-- CLAIM TYPE + LEAKAGE -->
+<div class="row g-4">
+
+    <div class="col-lg-6">
+        <div class="dashboard-card h-100">
+            <h4 class="section-title">Claim Type Distribution</h4>
+            <p class="section-text">
+                This shows how different claim types contribute to total cost.
+            </p>
+            {{ claim_type_chart|safe }}
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="dashboard-card h-100">
+            <h4 class="section-title">Payer Revenue Leakage</h4>
+            <p class="section-text">
+                Denied amounts highlight where the insurance company is losing money.
+            </p>
+            {{ leakage_chart|safe }}
+        </div>
+    </div>
+
+</div>
+
+<!-- PAYER TABLE -->
+<div class="dashboard-card">
+    <h4 class="section-title">Payer Performance Summary</h4>
+    <p class="section-text">
+        Detailed breakdown of encounters, cost, coverage, and denied amounts by payer.
+    </p>
+    <div class="table-responsive">
+        {{ payer_table|safe }}
+    </div>
+</div>
+
+<!-- FINAL INSIGHT -->
+<div class="dashboard-card">
+    <h4 class="section-title">Key Insight</h4>
+    <p class="section-text">
+        Claim costs are increasing over time, with a few payer groups contributing to a significant portion of denied amounts.
+        Optimizing payer contracts and focusing on high-cost claim categories can significantly improve financial performance.
+    </p>
+</div>
+
+{% endblock %}

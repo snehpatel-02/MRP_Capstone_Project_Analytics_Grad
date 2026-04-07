@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block page_heading %}Market Access Analytics Platform{% endblock %}
+{% block page_subheading %}Decision support for insurance and pharma teams{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-card mb-4">
+    <h2 class="section-title">Why this tool is useful</h2>
+    <p class="section-text">
+        This platform helps healthcare stakeholders turn historical claims and disease data into practical decisions.
+        It combines business KPIs, payer analytics, disease burden, and forecasting into a single workflow so users
+        can quickly understand what has happened, what is happening now, and what is likely to happen next.
+    </p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="dashboard-card h-100">
+            <h3 class="section-title">For Insurance Teams</h3>
+            <p class="section-text">
+                Insurance users can monitor total claims, claim cost trends, payer leakage, and coverage performance.
+                This helps identify where money is being lost, which claim categories are driving cost, and where
+                payer strategy or reimbursement controls may need improvement.
+            </p>
+            <ul class="section-text mb-0">
+                <li>Track actual vs forecast claim cost</li>
+                <li>Identify top leakage payers</li>
+                <li>Review claim type distribution</li>
+                <li>Support cost planning and pricing decisions</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="dashboard-card h-100">
+            <h3 class="section-title">For Pharma Teams</h3>
+            <p class="section-text">
+                Pharma users can evaluate disease burden, view opportunity signals, and analyze SARIMA-based demand
+                forecasts for selected diseases. This supports therapeutic prioritization, market access planning,
+                and forward-looking portfolio decisions.
+            </p>
+            <ul class="section-text mb-0">
+                <li>Compare disease demand patterns</li>
+                <li>Use forecast-driven tactical filtering</li>
+                <li>Evaluate opportunity matrix signals</li>
+                <li>Prioritize high-potential disease areas</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-card mb-4">
+    <h3 class="section-title">How end users can make decisions with this tool</h3>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="p-3" style="background:#f6f8fb; border-radius:14px; height:100%;">
+                <h5 style="margin-bottom:10px;">1. Understand the current situation</h5>
+                <p class="section-text mb-0">
+                    Start by reviewing KPIs, claims trends, and disease burden to understand where cost and demand are concentrated.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="p-3" style="background:#f6f8fb; border-radius:14px; height:100%;">
+                <h5 style="margin-bottom:10px;">2. Identify risk or opportunity</h5>
+                <p class="section-text mb-0">
+                    Use leakage charts, payer analysis, and opportunity matrix views to isolate segments that deserve attention.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="p-3" style="background:#f6f8fb; border-radius:14px; height:100%;">
+                <h5 style="margin-bottom:10px;">3. Plan the next action</h5>
+                <p class="section-text mb-0">
+                    Use forecast outputs to plan interventions, allocate resources, improve contracts, or prioritize disease strategy.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="dashboard-card h-100">
+            <h3 class="section-title">Navigate to Insurance Dashboard</h3>
+            <p class="section-text">
+                Use the Insurance Dashboard when the goal is to understand claims, coverage performance, payer leakage,
+                and future financial exposure.
+            </p>
+            <a href="/insurance-dashboard" class="btn btn-primary">Open Insurance Dashboard</a>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="dashboard-card h-100">
+            <h3 class="section-title">Navigate to Pharma Dashboard</h3>
+            <p class="section-text">
+                Use the Pharma Dashboard when the goal is to study disease burden, demand forecasts, and tactical
+                therapeutic opportunities.
+            </p>
+            <a href="/pharma-dashboard" class="btn btn-primary">Open Pharma Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-card">
+    <h3 class="section-title">Final value</h3>
+    <p class="section-text mb-0">
+        This tool helps end users move from raw healthcare data to actionable business decisions. Instead of manually
+        analyzing spreadsheets or disconnected reports, users can interact with focused dashboards designed for
+        insurance and pharma decision-making.
+    </p>
+</div>
+
+{% endblock %}

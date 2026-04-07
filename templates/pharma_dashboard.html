@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Pharma Dashboard{% endblock %}
+
+{% block page_heading %}Pharma Company Dashboard{% endblock %}
+{% block page_subheading %}Disease Trends, Forecast, and Market Opportunity Overview{% endblock %}
+
+{% block content %}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-value">{{ total_diseases }}</div>
+            <div class="kpi-label">Total Disease Records</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-value">{{ total_actual_claims }}</div>
+            <div class="kpi-label">Total Actual Disease Claims</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-value">{{ total_forecast_claims }}</div>
+            <div class="kpi-label">Total Forecast Disease Claims</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-3">
+        <div class="dashboard-card h-100">
+            <h4 class="section-title">Tactical Filter</h4>
+            <p class="section-text">
+                Select one disease to focus the forecast and opportunity views.
+            </p>
+
+            <form method="get">
+                <select name="disease" class="form-control mb-3">
+                    <option value="All" {% if selected_disease == "All" %}selected{% endif %}>All Diseases</option>
+                    {% for d in disease_list %}
+                        <option value="{{ d }}" {% if selected_disease == d %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+            </form>
+
+            <div class="mt-4 p-3" style="background:#f6f8fb; border-radius:14px;">
+                <h5 style="font-size:16px; margin-bottom:10px;">Strategy Note</h5>
+                <p class="section-text mb-0">
+                    The opportunity matrix evaluates commercial potential using exposure, leakage,
+                    and market access pressure. The selected disease also drives the SARIMA tactical
+                    demand forecast shown on the right.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div class="dashboard-card">
+            <h4 class="section-title">Opportunity Matrix</h4>
+            <p class="section-text">
+                This view compares claim exposure and revenue leakage across payer segments to identify
+                high-priority opportunity areas.
+            </p>
+            {{ opportunity_matrix_chart|safe }}
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-card mb-4">
+    <h4 class="section-title">SARIMA Monthly Demand Forecast</h4>
+    <p class="section-text">
+        Historical demand and SARIMA-based projected demand for the selected disease.
+    </p>
+    {{ sarima_chart|safe }}
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="dashboard-card h-100">
+            <h4 class="section-title">Top Disease Burden</h4>
+            <p class="section-text">
+                This view highlights diseases contributing the highest historical claim burden.
+            </p>
+            {{ disease_burden_chart|safe }}
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="dashboard-card h-100">
+            <h4 class="section-title">Forecast Summary</h4>
+            <p class="section-text">
+                This table summarizes the next forecasted claim amounts for major diseases.
+            </p>
+            <div class="table-responsive">
+                {{ forecast_summary_table|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-card">
+    <h4 class="section-title">Key Insight</h4>
+    <p class="section-text">
+        Disease-level forecasting helps pharma teams identify future demand concentration areas,
+        prioritize therapeutic focus, and align market access strategy with emerging burden patterns.
+    </p>
+</div>
+
+{% endblock %}
