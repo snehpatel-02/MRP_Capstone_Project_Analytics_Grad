@@ -1,0 +1,62 @@
+[
+  {
+    "question": "What is this platform used for?",
+    "answer": "This platform helps insurance and pharma teams analyze healthcare claims, payer performance, disease burden, and forecast trends to support data-driven decision making."
+  },
+  {
+    "question": "Why is this tool useful?",
+    "answer": "It converts raw healthcare data into actionable insights by combining KPIs, payer analytics, and forecasting in one place so users can understand past, present, and future trends."
+  },
+  {
+    "question": "Who are the end users of this platform?",
+    "answer": "End users include insurance analysts, pharma teams, healthcare administrators, and decision-makers who need insights into claims, costs, and market access strategies."
+  },
+  {
+    "question": "What can insurance teams do with this dashboard?",
+    "answer": "Insurance teams can track total claims, monitor claim cost trends, identify revenue leakage, analyze payer performance, and improve coverage strategies."
+  },
+  {
+    "question": "How should an insurance team use this dashboard?",
+    "answer": "They should start by reviewing KPIs and claim trends, then analyze payer leakage and coverage gaps, and finally use insights to improve reimbursement and cost control strategies."
+  },
+  {
+    "question": "What is revenue leakage?",
+    "answer": "Revenue leakage refers to the amount lost due to denied claims or low payer coverage, indicating inefficiencies in reimbursement processes."
+  },
+  {
+    "question": "What does coverage percentage mean?",
+    "answer": "Coverage percentage shows how much of the total claim cost is paid by the payer compared to the total billed amount."
+  },
+  {
+    "question": "What can pharma teams do with this dashboard?",
+    "answer": "Pharma teams can analyze disease burden, evaluate market opportunities, and use demand forecasts to support strategic planning and portfolio decisions."
+  },
+  {
+    "question": "What insights are available on the pharma dashboard?",
+    "answer": "The pharma dashboard provides disease-level claim trends, forecasted demand using SARIMA models, and opportunity matrix insights for market expansion."
+  },
+  {
+    "question": "What is disease burden?",
+    "answer": "Disease burden represents the total impact of a disease based on claim costs and frequency, helping identify high-priority therapeutic areas."
+  },
+  {
+    "question": "What is the opportunity matrix?",
+    "answer": "The opportunity matrix visualizes relationships between claim exposure, revenue leakage, and market pressure to identify high-impact payer or disease opportunities."
+  },
+  {
+    "question": "What is forecasting in this platform?",
+    "answer": "Forecasting predicts future claim costs and disease demand trends using time-series models like SARIMA to support proactive decision making."
+  },
+  {
+    "question": "How does this tool help decision making?",
+    "answer": "It helps users understand current performance, identify risks or opportunities, and plan future actions using predictive insights."
+  },
+  {
+    "question": "How can users identify risks or opportunities?",
+    "answer": "Users can analyze payer leakage, claim distributions, and opportunity matrix visuals to find areas needing attention."
+  },
+  {
+    "question": "What is the final value of this platform?",
+    "answer": "The platform transforms complex healthcare data into clear insights, enabling faster and smarter decisions without relying on manual analysis."
+  }
+]

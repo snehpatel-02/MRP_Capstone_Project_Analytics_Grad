@@ -117,4 +117,135 @@
     </p>
 </div>
 
+<div class="chatbot-fab" onclick="toggleChatbot()">
+    💬
+</div>
+
+<div id="floating-chatbot" class="floating-chatbot hidden">
+    <div class="floating-chatbot-header">
+        <div>
+            <h3>Assistant</h3>
+            <p>Insurance, pharma, KPIs, forecasts</p>
+        </div>
+        <button type="button" class="chat-close-btn" onclick="toggleChatbot()">✕</button>
+    </div>
+
+    <div class="suggested-questions floating-suggestions">
+        <button type="button" onclick="askSuggestedQuestion('What is this platform used for?')">Platform purpose</button>
+        <button type="button" onclick="askSuggestedQuestion('How should an insurance team use this dashboard?')">Insurance usage</button>
+        <button type="button" onclick="askSuggestedQuestion('What can end users learn from the pharma page?')">Pharma insights</button>
+        <button type="button" onclick="askSuggestedQuestion('What does coverage percentage mean?')">Coverage %</button>
+    </div>
+
+    <div id="floating-chat-box" class="chat-box floating-chat-box">
+        <div class="bot-message">
+            <div class="message-label">Assistant</div>
+            <div class="message-bubble">
+                Hi, I’m your dashboard assistant. Ask me about KPIs, payer leakage, forecasts, or how to use the dashboards.
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-input-row floating-input-row">
+        <input
+            type="text"
+            id="floating-user-input"
+            placeholder="Type your question here..."
+            onkeypress="handleKeyPress(event)"
+        >
+        <button type="button" class="send-btn" id="floating-send-btn" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+function toggleChatbot() {
+    const chatbot = document.getElementById("floating-chatbot");
+    chatbot.classList.toggle("hidden");
+}
+
+function handleKeyPress(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+}
+
+function askSuggestedQuestion(question) {
+    document.getElementById("floating-user-input").value = question;
+    sendMessage();
+}
+
+function appendMessage(sender, message, type) {
+    const chatBox = document.getElementById("floating-chat-box");
+    const wrapper = document.createElement("div");
+    wrapper.className = type === "user" ? "user-message" : "bot-message";
+
+    wrapper.innerHTML = `
+        <div class="message-label">${sender}</div>
+        <div class="message-bubble">${message}</div>
+    `;
+
+    chatBox.appendChild(wrapper);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function showTyping() {
+    const chatBox = document.getElementById("floating-chat-box");
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "bot-message";
+    typingDiv.id = "typing-indicator";
+    typingDiv.innerHTML = `
+        <div class="message-label">Assistant</div>
+        <div class="message-bubble typing-bubble">
+            <span></span><span></span><span></span>
+        </div>
+    `;
+    chatBox.appendChild(typingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function removeTyping() {
+    const typingDiv = document.getElementById("typing-indicator");
+    if (typingDiv) {
+        typingDiv.remove();
+    }
+}
+
+function sendMessage() {
+    const input = document.getElementById("floating-user-input");
+    const btn = document.getElementById("floating-send-btn");
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    btn.disabled = true;
+    btn.innerText = "Sending...";
+
+    appendMessage("You", message, "user");
+    input.value = "";
+    showTyping();
+
+    fetch("/ask", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        removeTyping();
+        appendMessage("Assistant", data.response, "bot");
+    })
+    .catch(error => {
+        removeTyping();
+        appendMessage("Assistant", "Something went wrong while getting a response.", "bot");
+        console.error(error);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerText = "Send";
+    });
+}
+</script>
+
 {% endblock %}

@@ -10,33 +10,163 @@
 </head>
 <body>
 
-    <div class="app-shell">
-        <aside class="sidebar">
-            <div class="brand-box">
-                <h2 class="brand-title">Healthcare Analytics</h2>
-                <p class="brand-subtitle">Decision Support Platform</p>
-            </div>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand-box">
+            <h2 class="brand-title">Healthcare Analytics</h2>
+            <p class="brand-subtitle">Decision Support Platform</p>
+        </div>
 
-            <nav class="sidebar-nav">
-                <a href="/" class="nav-item">Home</a>
-                <a href="/insurance-dashboard" class="nav-item">Insurance Dashboard</a>
-                <a href="/pharma-dashboard" class="nav-item">Pharma Dashboard</a>
-            </nav>
-        </aside>
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-item">Home</a>
+            <a href="/insurance-dashboard" class="nav-item">Insurance Dashboard</a>
+            <a href="/pharma-dashboard" class="nav-item">Pharma Dashboard</a>
+        </nav>
 
-        <main class="main-content">
-            <header class="top-header">
-                <div>
-                    <h1 class="page-heading">{% block page_heading %}Dashboard{% endblock %}</h1>
-                    <p class="page-subheading">{% block page_subheading %}Analytics view{% endblock %}</p>
-                </div>
-            </header>
+        {% if show_filters %}
+        <div class="sidebar-section">
+            <h4 class="sidebar-heading">Filters</h4>
 
-            <section class="content-wrapper">
-                {% block content %}{% endblock %}
-            </section>
-        </main>
+            {% if page_type == "insurance" %}
+<form method="GET" action="/insurance-dashboard">
+    <div class="filter-group">
+        <button class="filter-toggle" type="button" onclick="toggleFilter('insurance-date-filter')">
+            Date Range
+        </button>
+        <div id="insurance-date-filter" class="filter-content open">
+            <input type="date" name="start_date" class="filter-input" value="{{ start_date }}">
+            <input type="date" name="end_date" class="filter-input" value="{{ end_date }}">
+        </div>
     </div>
+
+    <div class="filter-group">
+        <button class="filter-toggle" type="button" onclick="toggleFilter('payer-filter')">
+            Payer
+        </button>
+        <div id="payer-filter" class="filter-content">
+            {% for payer in insurance_payer_options %}
+            <label title="{{ payer.value }}">
+                <input type="checkbox" name="payer" value="{{ payer.value }}"
+                    {% if payer.value in selected_payers %}checked{% endif %}>
+                {{ payer.label }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="filter-group">
+        <button class="filter-toggle" type="button" onclick="toggleFilter('claimtype-filter')">
+            Claim Type
+        </button>
+        <div id="claimtype-filter" class="filter-content">
+            {% for claim_type in insurance_claim_types %}
+            <label>
+                <input type="checkbox" name="claim_type" value="{{ claim_type }}"
+                    {% if claim_type in selected_claim_types %}checked{% endif %}>
+                {{ claim_type }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="filter-group">
+        <button class="filter-toggle" type="button" onclick="toggleFilter('insurance-disease-filter')">
+            Disease
+        </button>
+        <div id="insurance-disease-filter" class="filter-content open">
+            <select name="disease" class="filter-input">
+                <option value="All" {% if selected_disease == "All" %}selected{% endif %}>All Diseases</option>
+                {% for disease in insurance_diseases %}
+                <option value="{{ disease }}" {% if disease == selected_disease %}selected{% endif %}>
+                    {{ disease }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-actions">
+        <button type="submit" class="filter-apply-btn">Apply Filter</button>
+        <a href="/insurance-dashboard" class="filter-reset-btn">Reset All</a>
+    </div>
+</form>
+{% endif %}
+
+            {% if page_type == "pharma" %}
+            <form method="GET" action="/pharma-dashboard">
+                <div class="filter-group">
+                    <button class="filter-toggle" type="button" onclick="toggleFilter('pharma-date-filter')">
+                        Date Range
+                    </button>
+                    <div id="pharma-date-filter" class="filter-content open">
+                        <input type="date" name="start_date" class="filter-input" value="{{ start_date }}">
+                        <input type="date" name="end_date" class="filter-input" value="{{ end_date }}">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+    <button class="filter-toggle" type="button" onclick="toggleFilter('disease-filter')">
+        Disease
+    </button>
+    <div id="disease-filter" class="filter-content open">
+        <select name="disease" class="filter-input">
+            <option value="All" {% if selected_disease == "All" %}selected{% endif %}>All Diseases</option>
+            {% for disease in disease_list %}
+            <option value="{{ disease }}" {% if disease == selected_disease %}selected{% endif %}>
+                {{ disease }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+                <div class="filter-group">
+                    <button class="filter-toggle" type="button" onclick="toggleFilter('forecast-filter')">
+                        Forecast View
+                    </button>
+                    <div id="forecast-filter" class="filter-content open">
+                        <select name="forecast_view" class="filter-input">
+                            <option value="both" {% if forecast_view == "both" %}selected{% endif %}>Actual + Forecast</option>
+                            <option value="actual" {% if forecast_view == "actual" %}selected{% endif %}>Actual Only</option>
+                            <option value="forecast" {% if forecast_view == "forecast" %}selected{% endif %}>Forecast Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="filter-apply-btn">Apply Filter</button>
+                    <a href="/pharma-dashboard" class="filter-reset-btn">Reset All</a>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="sidebar-section-placeholder"></div>
+        {% endif %}
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div>
+                <h1 class="page-heading">{% block page_heading %}Dashboard{% endblock %}</h1>
+                <p class="page-subheading">{% block page_subheading %}Analytics view{% endblock %}</p>
+            </div>
+        </header>
+
+        <section class="content-wrapper">
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+</div>
+
+<script>
+function toggleFilter(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.classList.toggle("open");
+    }
+}
+</script>
 
 </body>
 </html>

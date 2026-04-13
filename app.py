@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from pathlib import Path
+from chatbot import get_chatbot_response
 
 app = Flask(__name__)
 
@@ -16,138 +17,238 @@ patients = pd.read_csv(DATA_DIR / "patients.csv")
 encounters = pd.read_csv(DATA_DIR / "encounters.csv")
 monthly_claim_summary = pd.read_csv(DATA_DIR / "monthly_claim_summary.csv")
 forecast_df = pd.read_csv(DATA_DIR / "claim_cost_forecast.csv")
+disease_actual_master = pd.read_csv(DATA_DIR / "disease_actual_claims.csv")
+sarima_forecast_master = pd.read_csv(DATA_DIR / "sarima_forecast.csv")
+conditions = pd.read_csv(DATA_DIR / "conditions.csv")
 
 # -----------------------------
-# CLEAN ENCOUNTERS
+# CLEAN CORE TABLES
 # -----------------------------
-if "ENCOUNTERCLASS" not in encounters.columns:
-    encounters["ENCOUNTERCLASS"] = "Unknown"
-else:
-    encounters["ENCOUNTERCLASS"] = encounters["ENCOUNTERCLASS"].fillna("Unknown")
+encounters["PAYER"] = encounters.get("PAYER", "Unknown")
+encounters["PAYER"] = encounters["PAYER"].fillna("Unknown")
 
-if "PAYER" not in encounters.columns:
-    encounters["PAYER"] = "Unknown"
-else:
-    encounters["PAYER"] = encounters["PAYER"].fillna("Unknown")
+encounters["ENCOUNTERCLASS"] = encounters.get("ENCOUNTERCLASS", "Unknown")
+encounters["ENCOUNTERCLASS"] = encounters["ENCOUNTERCLASS"].fillna("Unknown")
 
-# -----------------------------
-# HELPER
-# -----------------------------
-def find_column(df, possible_names):
-    lower_map = {col.lower(): col for col in df.columns}
-    for name in possible_names:
-        if name.lower() in lower_map:
-            return lower_map[name.lower()]
-    return None
+encounters["START_DT"] = pd.to_datetime(
+    encounters.get("START"), errors="coerce", utc=True
+).dt.tz_localize(None)
+encounters["TOTAL_CLAIM_COST"] = pd.to_numeric(
+    encounters.get("TOTAL_CLAIM_COST"), errors="coerce"
+).fillna(0)
+encounters["PAYER_COVERAGE"] = pd.to_numeric(
+    encounters.get("PAYER_COVERAGE"), errors="coerce"
+).fillna(0)
 
-# -----------------------------
-# DETECT REAL COLUMNS FOR INSURANCE
-# -----------------------------
-actual_month_col = find_column(
-    monthly_claim_summary,
-    ["Month", "MonthStart", "month", "monthstart"]
+conditions["DESCRIPTION"] = conditions.get("DESCRIPTION", "Unknown")
+conditions["DESCRIPTION"] = conditions["DESCRIPTION"].fillna("Unknown")
+conditions["PATIENT"] = conditions.get("PATIENT", pd.Series(dtype="object"))
+
+disease_actual_master["MonthStart"] = pd.to_datetime(
+    disease_actual_master["MonthStart"], errors="coerce"
 )
+disease_actual_master["InsuranceClaimAmount"] = pd.to_numeric(
+    disease_actual_master["InsuranceClaimAmount"], errors="coerce"
+).fillna(0)
 
-actual_value_col = find_column(
-    monthly_claim_summary,
-    [
-        "Sum of TotalClaimCost",
-        "TotalClaimCost",
-        "ClaimCost",
-        "InsuranceClaimAmount",
-        "claim_cost"
-    ]
+sarima_forecast_master["MonthStart"] = pd.to_datetime(
+    sarima_forecast_master["MonthStart"], errors="coerce"
 )
+sarima_forecast_master["ForecastInsuranceClaimAmount"] = pd.to_numeric(
+    sarima_forecast_master["ForecastInsuranceClaimAmount"], errors="coerce"
+).fillna(0)
 
-forecast_month_col = find_column(
-    forecast_df,
-    ["Month", "MonthStart", "month", "monthstart"]
-)
-
-forecast_value_col = find_column(
-    forecast_df,
-    [
-        "ForecastClaimCost",
-        "Forecast",
-        "Predicted",
-        "ForecastInsuranceClaimAmount"
-    ]
-)
+forecast_df["MonthStart"] = pd.to_datetime(forecast_df["MonthStart"], errors="coerce")
+forecast_df["ForecastClaimCost"] = pd.to_numeric(
+    forecast_df["ForecastClaimCost"], errors="coerce"
+).fillna(0)
 
 # -----------------------------
-# PREPARE INSURANCE DATA
+# FILTER HELPERS
 # -----------------------------
-if actual_month_col and actual_value_col:
-    actual_df = monthly_claim_summary[[actual_month_col, actual_value_col]].copy()
-    actual_df.columns = ["Month", "Actual"]
-else:
-    actual_df = pd.DataFrame(columns=["Month", "Actual"])
+def parse_start_date(value):
+    if not value:
+        return None
+    dt = pd.to_datetime(value, errors="coerce")
+    return None if pd.isna(dt) else dt
 
-if forecast_month_col and forecast_value_col:
-    future_df = forecast_df[[forecast_month_col, forecast_value_col]].copy()
-    future_df.columns = ["Month", "Forecast"]
-else:
-    future_df = pd.DataFrame(columns=["Month", "Forecast"])
 
-actual_df["Month"] = pd.to_datetime(actual_df["Month"], errors="coerce")
-future_df["Month"] = pd.to_datetime(future_df["Month"], errors="coerce")
+def parse_end_date(value):
+    if not value:
+        return None
+    dt = pd.to_datetime(value, errors="coerce")
+    return None if pd.isna(dt) else dt
 
-actual_df["Actual"] = pd.to_numeric(actual_df["Actual"], errors="coerce")
-future_df["Forecast"] = pd.to_numeric(future_df["Forecast"], errors="coerce")
 
-actual_df = actual_df.sort_values("Month").dropna(subset=["Month"])
-future_df = future_df.sort_values("Month").dropna(subset=["Month"])
+def apply_date_filter(df, col_name, start_date=None, end_date=None):
+    result = df.copy()
+    if start_date is not None:
+        result = result[result[col_name] >= start_date]
+    if end_date is not None:
+        result = result[result[col_name] <= end_date]
+    return result
 
-total_actual_value = actual_df["Actual"].fillna(0).sum()
-total_forecast_value = future_df["Forecast"].fillna(0).sum()
+
+def short_label(text, keep=12):
+    text = str(text)
+    return text if len(text) <= keep else f"{text[:keep]}..."
+
+
+# -----------------------------
+# SIDEBAR OPTIONS
+# -----------------------------
+insurance_payer_values = sorted(encounters["PAYER"].dropna().astype(str).unique().tolist())
+insurance_payer_options = [
+    {"value": p, "label": short_label(p, keep=12)} for p in insurance_payer_values
+]
+
+insurance_claim_types = sorted(
+    encounters["ENCOUNTERCLASS"].dropna().astype(str).unique().tolist()
+)
+insurance_diseases = sorted(
+    conditions["DESCRIPTION"].dropna().astype(str).unique().tolist()
+)
+pharma_diseases = sorted(
+    disease_actual_master["DISEASE"].dropna().astype(str).unique().tolist()
+)
 
 # -----------------------------
 # HOME
 # -----------------------------
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template(
+        "home.html",
+        show_filters=False,
+        page_type="home"
+    )
 
 # -----------------------------
 # INSURANCE DASHBOARD
 # -----------------------------
 @app.route("/insurance-dashboard")
 def insurance_dashboard():
-    total_claims = f"{len(encounters):,}"
-    total_actual = f"{total_actual_value:,.2f}"
-    total_forecast = f"{total_forecast_value:,.2f}"
+    start_date_str = request.args.get("start_date", "")
+    end_date_str = request.args.get("end_date", "")
+    selected_payers = request.args.getlist("payer")
+    selected_claim_types = request.args.getlist("claim_type")
+    selected_disease = request.args.get("disease", "All")
 
-    actual_plot_df = actual_df.copy()
-    forecast_plot_df = future_df.copy()
-    actual_plot_df = actual_plot_df[actual_plot_df["Month"] >= pd.Timestamp("2023-01-01")]
+    start_date = parse_start_date(start_date_str)
+    end_date = parse_end_date(end_date_str)
+
+    filtered_encounters = encounters.copy()
+
+    if selected_payers:
+        filtered_encounters = filtered_encounters[
+            filtered_encounters["PAYER"].isin(selected_payers)
+        ]
+
+    if selected_claim_types:
+        filtered_encounters = filtered_encounters[
+            filtered_encounters["ENCOUNTERCLASS"].isin(selected_claim_types)
+        ]
+
+    if selected_disease and selected_disease != "All":
+        patient_ids = (
+            conditions[conditions["DESCRIPTION"] == selected_disease]["PATIENT"]
+            .dropna()
+            .unique()
+        )
+        filtered_encounters = filtered_encounters[
+            filtered_encounters["PATIENT"].isin(patient_ids)
+        ]
+
+    filtered_encounters = apply_date_filter(
+        filtered_encounters,
+        "START_DT",
+        start_date=start_date,
+        end_date=end_date
+    )
+
+    # KPIs
+    total_claims = f"{len(filtered_encounters):,}"
+    total_actual = f"{filtered_encounters['TOTAL_CLAIM_COST'].sum():,.2f}"
+
+    forecast_plot_df = apply_date_filter(
+        forecast_df.copy(),
+        "MonthStart",
+        start_date=start_date,
+        end_date=end_date
+    )
+
+    if selected_disease and selected_disease != "All":
+        insurance_disease_forecast = sarima_forecast_master.copy()
+        insurance_disease_forecast = insurance_disease_forecast[
+            insurance_disease_forecast["DISEASE"] == selected_disease
+        ]
+        insurance_disease_forecast = apply_date_filter(
+            insurance_disease_forecast,
+            "MonthStart",
+            start_date=start_date,
+            end_date=end_date
+        )
+        total_forecast = (
+            f"{insurance_disease_forecast['ForecastInsuranceClaimAmount'].sum():,.2f}"
+        )
+        forecast_plot_df = insurance_disease_forecast.rename(
+            columns={
+                "MonthStart": "Month",
+                "ForecastInsuranceClaimAmount": "Forecast"
+            }
+        )[["Month", "Forecast"]].sort_values("Month")
+    else:
+        total_forecast = f"{forecast_plot_df['ForecastClaimCost'].sum():,.2f}"
+        forecast_plot_df = forecast_plot_df.rename(
+            columns={"MonthStart": "Month", "ForecastClaimCost": "Forecast"}
+        )[["Month", "Forecast"]].sort_values("Month")
+
+    # Actual monthly trend
+    actual_plot_df = (
+        filtered_encounters.dropna(subset=["START_DT"])
+        .groupby(filtered_encounters["START_DT"].dt.to_period("M"))["TOTAL_CLAIM_COST"]
+        .sum()
+        .reset_index()
+    )
+
+    if not actual_plot_df.empty:
+        actual_plot_df["START_DT"] = actual_plot_df["START_DT"].astype(str)
+        actual_plot_df["Month"] = pd.to_datetime(actual_plot_df["START_DT"])
+        actual_plot_df.rename(columns={"TOTAL_CLAIM_COST": "Actual"}, inplace=True)
+        actual_plot_df = actual_plot_df[["Month", "Actual"]].sort_values("Month")
+    else:
+        actual_plot_df = pd.DataFrame(columns=["Month", "Actual"])
 
     trend_fig = go.Figure()
 
-    trend_fig.add_trace(go.Scatter(
-        x=actual_plot_df["Month"],
-        y=actual_plot_df["Actual"],
-        mode="lines+markers",
-        name="Actual",
-        line=dict(width=3, color="#4F6BED"),
-        marker=dict(size=5, color="#4F6BED")
-    ))
-
-    trend_fig.add_trace(go.Scatter(
-        x=forecast_plot_df["Month"],
-        y=forecast_plot_df["Forecast"],
-        mode="lines+markers",
-        name="Forecast",
-        line=dict(width=4, dash="dash", color="#E4572E"),
-        marker=dict(size=8, color="#E4572E")
-    ))
+    if not actual_plot_df.empty:
+        trend_fig.add_trace(go.Scatter(
+            x=actual_plot_df["Month"],
+            y=actual_plot_df["Actual"],
+            mode="lines+markers",
+            name="Actual",
+            line=dict(width=3, color="#4F6BED"),
+            marker=dict(size=5, color="#4F6BED")
+        ))
 
     if not forecast_plot_df.empty:
+        trend_fig.add_trace(go.Scatter(
+            x=forecast_plot_df["Month"],
+            y=forecast_plot_df["Forecast"],
+            mode="lines+markers",
+            name="Forecast",
+            line=dict(width=4, dash="dash", color="#E4572E"),
+            marker=dict(size=8, color="#E4572E")
+        ))
+
         forecast_start = forecast_plot_df["Month"].min()
         ymax_candidates = []
+
         if not actual_plot_df.empty:
             ymax_candidates.append(actual_plot_df["Actual"].max())
         if not forecast_plot_df.empty:
             ymax_candidates.append(forecast_plot_df["Forecast"].max())
+
         ymax = max(ymax_candidates) if ymax_candidates else 0
 
         trend_fig.add_vline(
@@ -180,11 +281,11 @@ def insurance_dashboard():
             x=1
         )
     )
-
     trend_chart = trend_fig.to_html(full_html=False)
 
+    # Claim type chart
     claim_type_df = (
-        encounters.groupby("ENCOUNTERCLASS")
+        filtered_encounters.groupby("ENCOUNTERCLASS")
         .size()
         .reset_index(name="Count")
         .sort_values("Count", ascending=False)
@@ -196,24 +297,28 @@ def insurance_dashboard():
         values="Count",
         title="Claim Type Distribution"
     )
-    claim_type_fig.update_layout(
-        template="plotly_white",
-        height=450
-    )
+    claim_type_fig.update_layout(template="plotly_white", height=450)
     claim_type_chart = claim_type_fig.to_html(full_html=False)
 
+    # Payer summary and leakage
     payer_summary = (
-        encounters.groupby("PAYER")
-        .agg(Total_Claims=("PAYER", "count"))
+        filtered_encounters.groupby("PAYER")
+        .agg(
+            Total_Claims=("PAYER", "count"),
+            Total_Claim_Cost=("TOTAL_CLAIM_COST", "sum"),
+            Coverage_Amount=("PAYER_COVERAGE", "sum")
+        )
         .reset_index()
     )
 
-    payer_summary["Total Claim Cost"] = payer_summary["Total_Claims"] * 100
-    payer_summary["Coverage Amount"] = payer_summary["Total Claim Cost"] * 0.75
-    payer_summary["Denied Amount"] = payer_summary["Total Claim Cost"] - payer_summary["Coverage Amount"]
+    payer_summary["Denied Amount"] = (
+        payer_summary["Total_Claim_Cost"] - payer_summary["Coverage_Amount"]
+    )
     payer_summary["Coverage %"] = (
-        payer_summary["Coverage Amount"] / payer_summary["Total Claim Cost"] * 100
-    ).round(2)
+        payer_summary["Coverage_Amount"]
+        / payer_summary["Total_Claim_Cost"].replace(0, pd.NA)
+        * 100
+    ).round(2).fillna(0)
 
     leakage_df = payer_summary.sort_values("Denied Amount", ascending=False).head(10)
 
@@ -231,7 +336,10 @@ def insurance_dashboard():
     )
     leakage_chart = leakage_fig.to_html(full_html=False)
 
-    payer_table = payer_summary.round(2).to_html(
+    payer_table = payer_summary.rename(columns={
+        "Total_Claim_Cost": "Total Claim Cost",
+        "Coverage_Amount": "Coverage Amount"
+    }).round(2).to_html(
         classes="table table-striped table-bordered",
         index=False
     )
@@ -244,7 +352,17 @@ def insurance_dashboard():
         trend_chart=trend_chart,
         claim_type_chart=claim_type_chart,
         leakage_chart=leakage_chart,
-        payer_table=payer_table
+        payer_table=payer_table,
+        show_filters=True,
+        page_type="insurance",
+        insurance_payer_options=insurance_payer_options,
+        insurance_claim_types=insurance_claim_types,
+        insurance_diseases=insurance_diseases,
+        selected_payers=selected_payers,
+        selected_claim_types=selected_claim_types,
+        selected_disease=selected_disease,
+        start_date=start_date_str,
+        end_date=end_date_str
     )
 
 # -----------------------------
@@ -252,63 +370,51 @@ def insurance_dashboard():
 # -----------------------------
 @app.route("/pharma-dashboard")
 def pharma_dashboard():
-    disease_actual = pd.read_csv(DATA_DIR / "disease_actual_claims.csv")
-    sarima_forecast = pd.read_csv(DATA_DIR / "sarima_forecast.csv")
-
-    def pick_col(df, options):
-        lower_map = {c.lower(): c for c in df.columns}
-        for opt in options:
-            if opt.lower() in lower_map:
-                return lower_map[opt.lower()]
-        return None
-
-    actual_disease_col = pick_col(disease_actual, ["DISEASE", "Disease"])
-    actual_month_col2 = pick_col(disease_actual, ["MonthStart", "Month", "monthstart", "month"])
-    actual_claim_col2 = pick_col(disease_actual, ["InsuranceClaimAmount", "ClaimAmount", "ActualClaimAmount"])
-
-    forecast_disease_col = pick_col(sarima_forecast, ["DISEASE", "Disease"])
-    forecast_month_col2 = pick_col(sarima_forecast, ["MonthStart", "Month", "monthstart", "month"])
-    forecast_claim_col2 = pick_col(sarima_forecast, ["ForecastInsuranceClaimAmount", "ForecastClaimAmount", "Forecast"])
-
-    actual_df2 = disease_actual[[actual_disease_col, actual_month_col2, actual_claim_col2]].copy()
-    actual_df2.columns = ["DISEASE", "Month", "Actual"]
-    actual_df2["Month"] = pd.to_datetime(actual_df2["Month"], errors="coerce")
-    actual_df2["Actual"] = pd.to_numeric(actual_df2["Actual"], errors="coerce")
-    actual_df2 = actual_df2.dropna(subset=["Month"])
-
-    forecast_df2 = sarima_forecast[[forecast_disease_col, forecast_month_col2, forecast_claim_col2]].copy()
-    forecast_df2.columns = ["DISEASE", "Month", "Forecast"]
-    forecast_df2["Month"] = pd.to_datetime(forecast_df2["Month"], errors="coerce")
-    forecast_df2["Forecast"] = pd.to_numeric(forecast_df2["Forecast"], errors="coerce")
-    forecast_df2 = forecast_df2.dropna(subset=["Month"])
-
+    start_date_str = request.args.get("start_date", "")
+    end_date_str = request.args.get("end_date", "")
     selected_disease = request.args.get("disease", "All")
-    disease_list = sorted(actual_df2["DISEASE"].dropna().unique())
+    forecast_view = request.args.get("forecast_view", "both")
+
+    start_date = parse_start_date(start_date_str)
+    end_date = parse_end_date(end_date_str)
+
+    actual_df2 = disease_actual_master.copy()
+    forecast_df2 = sarima_forecast_master.copy()
+
+    actual_df2 = apply_date_filter(
+        actual_df2, "MonthStart", start_date=start_date, end_date=end_date
+    )
+    forecast_df2 = apply_date_filter(
+        forecast_df2, "MonthStart", start_date=start_date, end_date=end_date
+    )
+
+    if selected_disease and selected_disease != "All":
+        actual_df2 = actual_df2[actual_df2["DISEASE"] == selected_disease]
+        forecast_df2 = forecast_df2[forecast_df2["DISEASE"] == selected_disease]
 
     total_diseases = f"{len(actual_df2):,}"
-    total_actual_claims = f"{actual_df2['Actual'].fillna(0).sum():,.2f}"
-    total_forecast_claims = f"{forecast_df2['Forecast'].fillna(0).sum():,.2f}"
+    total_actual_claims = f"{actual_df2['InsuranceClaimAmount'].sum():,.2f}"
+    total_forecast_claims = f"{forecast_df2['ForecastInsuranceClaimAmount'].sum():,.2f}"
 
     top_diseases = (
-        actual_df2.groupby("DISEASE")["Actual"]
+        actual_df2.groupby("DISEASE")["InsuranceClaimAmount"]
         .sum()
         .sort_values(ascending=False)
         .head(3)
         .index.tolist()
     )
 
-    # Top disease burden chart
     burden_df = (
-        actual_df2.groupby("DISEASE")["Actual"]
+        actual_df2.groupby("DISEASE")["InsuranceClaimAmount"]
         .sum()
         .reset_index()
-        .sort_values("Actual", ascending=False)
+        .sort_values("InsuranceClaimAmount", ascending=False)
         .head(10)
     )
 
     disease_burden_chart_fig = px.bar(
         burden_df,
-        x="Actual",
+        x="InsuranceClaimAmount",
         y="DISEASE",
         orientation="h",
         title="Top Disease Burden by Historical Claims"
@@ -320,35 +426,55 @@ def pharma_dashboard():
     )
     disease_burden_chart = disease_burden_chart_fig.to_html(full_html=False)
 
-    # Forecast summary table
     forecast_summary = (
-        forecast_df2.groupby("DISEASE")["Forecast"]
+        forecast_df2.groupby("DISEASE")["ForecastInsuranceClaimAmount"]
         .sum()
         .reset_index()
-        .sort_values("Forecast", ascending=False)
+        .sort_values("ForecastInsuranceClaimAmount", ascending=False)
         .round(2)
+        .rename(columns={"ForecastInsuranceClaimAmount": "Forecast"})
     )
     forecast_summary_table = forecast_summary.to_html(
         classes="table table-striped table-bordered",
         index=False
     )
 
-    # Opportunity Matrix
+    filtered_encounters = apply_date_filter(
+        encounters.copy(),
+        "START_DT",
+        start_date=start_date,
+        end_date=end_date
+    )
+
+    if selected_disease and selected_disease != "All":
+        patient_ids = (
+            conditions[conditions["DESCRIPTION"] == selected_disease]["PATIENT"]
+            .dropna()
+            .unique()
+        )
+        filtered_encounters = filtered_encounters[
+            filtered_encounters["PATIENT"].isin(patient_ids)
+        ]
+
     payer_summary = (
-        encounters.groupby("PAYER")
-        .agg(Total_Claims=("PAYER", "count"))
+        filtered_encounters.groupby("PAYER")
+        .agg(
+            Total_Claim_Exposure=("TOTAL_CLAIM_COST", "sum"),
+            Coverage_Amount=("PAYER_COVERAGE", "sum"),
+            Total_Claims=("PAYER", "count")
+        )
         .reset_index()
     )
 
-    payer_summary["Total Claim Exposure"] = payer_summary["Total_Claims"] * 4000
-    payer_summary["Revenue Leakage"] = payer_summary["Total_Claims"] * 1000
-    payer_summary["Market Pressure"] = payer_summary["Total_Claims"] * 0.8
-
-    payer_summary = payer_summary.sort_values("Total Claim Exposure", ascending=False).head(10)
+    payer_summary["Revenue Leakage"] = (
+        payer_summary["Total_Claim_Exposure"] - payer_summary["Coverage_Amount"]
+    )
+    payer_summary["Market Pressure"] = payer_summary["Total_Claims"]
+    payer_summary = payer_summary.sort_values("Total_Claim_Exposure", ascending=False).head(10)
 
     opportunity_fig = px.scatter(
         payer_summary,
-        x="Total Claim Exposure",
+        x="Total_Claim_Exposure",
         y="Revenue Leakage",
         size="Market Pressure",
         color="PAYER",
@@ -356,38 +482,36 @@ def pharma_dashboard():
         title="Opportunity Matrix: Revenue Leakage vs Market Exposure",
         size_max=60
     )
-    opportunity_fig.update_layout(
-        template="plotly_white",
-        height=500
-    )
+    opportunity_fig.update_layout(template="plotly_white", height=500)
     opportunity_matrix_chart = opportunity_fig.to_html(full_html=False)
 
-    # SARIMA chart only
     if selected_disease == "All":
         sarima_target = top_diseases[0] if top_diseases else None
     else:
         sarima_target = selected_disease
 
-    sarima_actual = actual_df2[actual_df2["DISEASE"] == sarima_target].sort_values("Month")
-    sarima_future = forecast_df2[forecast_df2["DISEASE"] == sarima_target].sort_values("Month")
+    sarima_actual = actual_df2[actual_df2["DISEASE"] == sarima_target].sort_values("MonthStart")
+    sarima_future = forecast_df2[forecast_df2["DISEASE"] == sarima_target].sort_values("MonthStart")
 
     sarima_fig = go.Figure()
 
-    sarima_fig.add_trace(go.Scatter(
-        x=sarima_actual["Month"],
-        y=sarima_actual["Actual"],
-        mode="lines",
-        name="Historical Demand",
-        line=dict(width=3, color="#0F2D5C")
-    ))
+    if forecast_view in ["both", "actual"]:
+        sarima_fig.add_trace(go.Scatter(
+            x=sarima_actual["MonthStart"],
+            y=sarima_actual["InsuranceClaimAmount"],
+            mode="lines",
+            name="Historical Demand",
+            line=dict(width=3, color="#0F2D5C")
+        ))
 
-    sarima_fig.add_trace(go.Scatter(
-        x=sarima_future["Month"],
-        y=sarima_future["Forecast"],
-        mode="lines",
-        name="SARIMA Forecast",
-        line=dict(width=3, color="#25C2A0")
-    ))
+    if forecast_view in ["both", "forecast"]:
+        sarima_fig.add_trace(go.Scatter(
+            x=sarima_future["MonthStart"],
+            y=sarima_future["ForecastInsuranceClaimAmount"],
+            mode="lines",
+            name="SARIMA Forecast",
+            line=dict(width=3, color="#25C2A0")
+        ))
 
     sarima_fig.update_layout(
         title=f"SARIMA Monthly Demand Forecast: {sarima_target}" if sarima_target else "SARIMA Monthly Demand Forecast",
@@ -406,14 +530,35 @@ def pharma_dashboard():
         total_forecast_claims=total_forecast_claims,
         disease_burden_chart=disease_burden_chart,
         forecast_summary_table=forecast_summary_table,
-        disease_list=disease_list,
+        disease_list=pharma_diseases,
         selected_disease=selected_disease,
+        forecast_view=forecast_view,
         opportunity_matrix_chart=opportunity_matrix_chart,
-        sarima_chart=sarima_chart
+        sarima_chart=sarima_chart,
+        show_filters=True,
+        page_type="pharma",
+        start_date=start_date_str,
+        end_date=end_date_str
     )
+
+# -----------------------------
+# CHATBOT
+# -----------------------------
+@app.route("/ask", methods=["POST"])
+def ask():
+    user_input = request.json.get("message", "").strip()
+
+    if not user_input:
+        return jsonify({"response": "Please enter a question."})
+
+    try:
+        response = get_chatbot_response(user_input)
+        return jsonify({"response": response})
+    except Exception as e:
+        return jsonify({"response": f"Error: {str(e)}"})
 
 # -----------------------------
 # RUN
 # -----------------------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
