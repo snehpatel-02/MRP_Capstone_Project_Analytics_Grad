@@ -7,245 +7,95 @@
 
 {% block content %}
 
-<div class="dashboard-card mb-4">
-    <h2 class="section-title">Why this tool is useful</h2>
-    <p class="section-text">
-        This platform helps healthcare stakeholders turn historical claims and disease data into practical decisions.
-        It combines business KPIs, payer analytics, disease burden, and forecasting into a single workflow so users
-        can quickly understand what has happened, what is happening now, and what is likely to happen next.
-    </p>
-</div>
+<div class="home-page">
 
-<div class="row g-4 mb-4">
-    <div class="col-lg-6">
-        <div class="dashboard-card h-100">
-            <h3 class="section-title">For Insurance Teams</h3>
-            <p class="section-text">
-                Insurance users can monitor total claims, claim cost trends, payer leakage, and coverage performance.
-                This helps identify where money is being lost, which claim categories are driving cost, and where
-                payer strategy or reimbursement controls may need improvement.
-            </p>
-            <ul class="section-text mb-0">
-                <li>Track actual vs forecast claim cost</li>
-                <li>Identify top leakage payers</li>
-                <li>Review claim type distribution</li>
-                <li>Support cost planning and pricing decisions</li>
-            </ul>
+    <div class="dashboard-card home-hero-card mb-3">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-8">
+                <span class="home-badge">Healthcare Decision Support</span>
+
+                <h2 class="home-hero-title">
+                    Turn claims, disease, and payer data into actionable decisions
+                </h2>
+
+                <p class="home-hero-text">
+                    Analyze claims, payer performance, disease burden, and forecast trends
+                    from one unified platform.
+                </p>
+
+                <div class="home-hero-actions">
+                    <a href="/insurance-dashboard" class="btn btn-primary home-btn-primary">
+                        Open Insurance Dashboard
+                    </a>
+
+                    <a href="/pharma-dashboard" class="btn home-btn-secondary">
+                        Open Pharma Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="home-hero-side">
+                    <div class="mini-metric-card purple-soft">
+                        <div class="mini-metric-title">Insurance</div>
+                        <div class="mini-metric-text">Claims, leakage, payer performance</div>
+                    </div>
+
+                    <div class="mini-metric-card blue-soft">
+                        <div class="mini-metric-title">Pharma</div>
+                        <div class="mini-metric-text">Disease trends, forecasts, planning</div>
+                    </div>
+
+                    <div class="mini-metric-card green-soft">
+                        <div class="mini-metric-title">Outcome</div>
+                        <div class="mini-metric-text">Faster decisions</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="col-lg-6">
-        <div class="dashboard-card h-100">
-            <h3 class="section-title">For Pharma Teams</h3>
-            <p class="section-text">
-                Pharma users can evaluate disease burden, view opportunity signals, and analyze SARIMA-based demand
-                forecasts for selected diseases. This supports therapeutic prioritization, market access planning,
-                and forward-looking portfolio decisions.
-            </p>
-            <ul class="section-text mb-0">
-                <li>Compare disease demand patterns</li>
-                <li>Use forecast-driven tactical filtering</li>
-                <li>Evaluate opportunity matrix signals</li>
-                <li>Prioritize high-potential disease areas</li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div class="dashboard-card mb-4">
-    <h3 class="section-title">How end users can make decisions with this tool</h3>
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="p-3" style="background:#f6f8fb; border-radius:14px; height:100%;">
-                <h5 style="margin-bottom:10px;">1. Understand the current situation</h5>
+    <div class="row g-3 mb-3">
+        <div class="col-lg-6">
+            <div class="dashboard-card value-card h-100">
+                <div class="value-icon purple-bg">01</div>
+                <h4 class="section-title mb-1">What this tool does</h4>
                 <p class="section-text mb-0">
-                    Start by reviewing KPIs, claims trends, and disease burden to understand where cost and demand are concentrated.
+                    Helps analyze claims, payer performance, disease burden, and forecasts
+                    to support better decision-making.
                 </p>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="p-3" style="background:#f6f8fb; border-radius:14px; height:100%;">
-                <h5 style="margin-bottom:10px;">2. Identify risk or opportunity</h5>
+        <div class="col-lg-6">
+            <div class="dashboard-card value-card h-100">
+                <div class="value-icon blue-bg">02</div>
+                <h4 class="section-title mb-1">Who the end users are</h4>
                 <p class="section-text mb-0">
-                    Use leakage charts, payer analysis, and opportunity matrix views to isolate segments that deserve attention.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="p-3" style="background:#f6f8fb; border-radius:14px; height:100%;">
-                <h5 style="margin-bottom:10px;">3. Plan the next action</h5>
-                <p class="section-text mb-0">
-                    Use forecast outputs to plan interventions, allocate resources, improve contracts, or prioritize disease strategy.
+                    Insurance teams, pharma teams, and decision-makers looking for insights
+                    into risks, trends, and opportunities.
                 </p>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row g-4 mb-4">
-    <div class="col-lg-6">
-        <div class="dashboard-card h-100">
-            <h3 class="section-title">Navigate to Insurance Dashboard</h3>
-            <p class="section-text">
-                Use the Insurance Dashboard when the goal is to understand claims, coverage performance, payer leakage,
-                and future financial exposure.
+    <div class="dashboard-card home-footer-strip mb-0">
+    <div class="row align-items-center g-3">
+        <div class="col-lg-9">
+            <span class="home-badge">Need Help?</span>
+            <h5 class="section-title mb-1">Have questions about the platform?</h5>
+            <p class="section-text mb-0">
+                Use <strong>NEXOR AI</strong>, our built-in floating chatbot, to ask about dashboards,
+                claims, payer performance, disease trends, or forecasts.
             </p>
-            <a href="/insurance-dashboard" class="btn btn-primary">Open Insurance Dashboard</a>
         </div>
-    </div>
 
-    <div class="col-lg-6">
-        <div class="dashboard-card h-100">
-            <h3 class="section-title">Navigate to Pharma Dashboard</h3>
-            <p class="section-text">
-                Use the Pharma Dashboard when the goal is to study disease burden, demand forecasts, and tactical
-                therapeutic opportunities.
-            </p>
-            <a href="/pharma-dashboard" class="btn btn-primary">Open Pharma Dashboard</a>
+        <div class="col-lg-3 text-lg-end">
+            <span class="faq-chip">NEXOR AI available</span>
         </div>
     </div>
 </div>
 
-<div class="dashboard-card">
-    <h3 class="section-title">Final value</h3>
-    <p class="section-text mb-0">
-        This tool helps end users move from raw healthcare data to actionable business decisions. Instead of manually
-        analyzing spreadsheets or disconnected reports, users can interact with focused dashboards designed for
-        insurance and pharma decision-making.
-    </p>
 </div>
-
-<div class="chatbot-fab" onclick="toggleChatbot()">
-    💬
-</div>
-
-<div id="floating-chatbot" class="floating-chatbot hidden">
-    <div class="floating-chatbot-header">
-        <div>
-            <h3>Assistant</h3>
-            <p>Insurance, pharma, KPIs, forecasts</p>
-        </div>
-        <button type="button" class="chat-close-btn" onclick="toggleChatbot()">✕</button>
-    </div>
-
-    <div class="suggested-questions floating-suggestions">
-        <button type="button" onclick="askSuggestedQuestion('What is this platform used for?')">Platform purpose</button>
-        <button type="button" onclick="askSuggestedQuestion('How should an insurance team use this dashboard?')">Insurance usage</button>
-        <button type="button" onclick="askSuggestedQuestion('What can end users learn from the pharma page?')">Pharma insights</button>
-        <button type="button" onclick="askSuggestedQuestion('What does coverage percentage mean?')">Coverage %</button>
-    </div>
-
-    <div id="floating-chat-box" class="chat-box floating-chat-box">
-        <div class="bot-message">
-            <div class="message-label">Assistant</div>
-            <div class="message-bubble">
-                Hi, I’m your dashboard assistant. Ask me about KPIs, payer leakage, forecasts, or how to use the dashboards.
-            </div>
-        </div>
-    </div>
-
-    <div class="chat-input-row floating-input-row">
-        <input
-            type="text"
-            id="floating-user-input"
-            placeholder="Type your question here..."
-            onkeypress="handleKeyPress(event)"
-        >
-        <button type="button" class="send-btn" id="floating-send-btn" onclick="sendMessage()">Send</button>
-    </div>
-</div>
-
-<script>
-function toggleChatbot() {
-    const chatbot = document.getElementById("floating-chatbot");
-    chatbot.classList.toggle("hidden");
-}
-
-function handleKeyPress(event) {
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-}
-
-function askSuggestedQuestion(question) {
-    document.getElementById("floating-user-input").value = question;
-    sendMessage();
-}
-
-function appendMessage(sender, message, type) {
-    const chatBox = document.getElementById("floating-chat-box");
-    const wrapper = document.createElement("div");
-    wrapper.className = type === "user" ? "user-message" : "bot-message";
-
-    wrapper.innerHTML = `
-        <div class="message-label">${sender}</div>
-        <div class="message-bubble">${message}</div>
-    `;
-
-    chatBox.appendChild(wrapper);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function showTyping() {
-    const chatBox = document.getElementById("floating-chat-box");
-    const typingDiv = document.createElement("div");
-    typingDiv.className = "bot-message";
-    typingDiv.id = "typing-indicator";
-    typingDiv.innerHTML = `
-        <div class="message-label">Assistant</div>
-        <div class="message-bubble typing-bubble">
-            <span></span><span></span><span></span>
-        </div>
-    `;
-    chatBox.appendChild(typingDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function removeTyping() {
-    const typingDiv = document.getElementById("typing-indicator");
-    if (typingDiv) {
-        typingDiv.remove();
-    }
-}
-
-function sendMessage() {
-    const input = document.getElementById("floating-user-input");
-    const btn = document.getElementById("floating-send-btn");
-    const message = input.value.trim();
-
-    if (!message) return;
-
-    btn.disabled = true;
-    btn.innerText = "Sending...";
-
-    appendMessage("You", message, "user");
-    input.value = "";
-    showTyping();
-
-    fetch("/ask", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: message })
-    })
-    .then(response => response.json())
-    .then(data => {
-        removeTyping();
-        appendMessage("Assistant", data.response, "bot");
-    })
-    .catch(error => {
-        removeTyping();
-        appendMessage("Assistant", "Something went wrong while getting a response.", "bot");
-        console.error(error);
-    })
-    .finally(() => {
-        btn.disabled = false;
-        btn.innerText = "Send";
-    });
-}
-</script>
 
 {% endblock %}

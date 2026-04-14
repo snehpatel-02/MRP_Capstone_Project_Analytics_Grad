@@ -13,7 +13,7 @@
 <div class="app-shell">
     <aside class="sidebar">
         <div class="brand-box">
-            <h2 class="brand-title">Healthcare Analytics</h2>
+            <h2 class="brand-title">NEXOR</h2>
             <p class="brand-subtitle">Decision Support Platform</p>
         </div>
 
@@ -28,69 +28,69 @@
             <h4 class="sidebar-heading">Filters</h4>
 
             {% if page_type == "insurance" %}
-<form method="GET" action="/insurance-dashboard">
-    <div class="filter-group">
-        <button class="filter-toggle" type="button" onclick="toggleFilter('insurance-date-filter')">
-            Date Range
-        </button>
-        <div id="insurance-date-filter" class="filter-content open">
-            <input type="date" name="start_date" class="filter-input" value="{{ start_date }}">
-            <input type="date" name="end_date" class="filter-input" value="{{ end_date }}">
-        </div>
-    </div>
+            <form method="GET" action="/insurance-dashboard">
+                <div class="filter-group">
+                    <button class="filter-toggle" type="button" onclick="toggleFilter('insurance-date-filter')">
+                        Date Range
+                    </button>
+                    <div id="insurance-date-filter" class="filter-content open">
+                        <input type="date" name="start_date" class="filter-input" value="{{ start_date }}">
+                        <input type="date" name="end_date" class="filter-input" value="{{ end_date }}">
+                    </div>
+                </div>
 
-    <div class="filter-group">
-        <button class="filter-toggle" type="button" onclick="toggleFilter('payer-filter')">
-            Payer
-        </button>
-        <div id="payer-filter" class="filter-content">
-            {% for payer in insurance_payer_options %}
-            <label title="{{ payer.value }}">
-                <input type="checkbox" name="payer" value="{{ payer.value }}"
-                    {% if payer.value in selected_payers %}checked{% endif %}>
-                {{ payer.label }}
-            </label>
-            {% endfor %}
-        </div>
-    </div>
+                <div class="filter-group">
+                    <button class="filter-toggle" type="button" onclick="toggleFilter('payer-filter')">
+                        Payer
+                    </button>
+                    <div id="payer-filter" class="filter-content">
+                        {% for payer in insurance_payer_options %}
+                        <label title="{{ payer.value }}">
+                            <input type="checkbox" name="payer" value="{{ payer.value }}"
+                                {% if payer.value in selected_payers %}checked{% endif %}>
+                            {{ payer.label }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
 
-    <div class="filter-group">
-        <button class="filter-toggle" type="button" onclick="toggleFilter('claimtype-filter')">
-            Claim Type
-        </button>
-        <div id="claimtype-filter" class="filter-content">
-            {% for claim_type in insurance_claim_types %}
-            <label>
-                <input type="checkbox" name="claim_type" value="{{ claim_type }}"
-                    {% if claim_type in selected_claim_types %}checked{% endif %}>
-                {{ claim_type }}
-            </label>
-            {% endfor %}
-        </div>
-    </div>
+                <div class="filter-group">
+                    <button class="filter-toggle" type="button" onclick="toggleFilter('claimtype-filter')">
+                        Claim Type
+                    </button>
+                    <div id="claimtype-filter" class="filter-content">
+                        {% for claim_type in insurance_claim_types %}
+                        <label>
+                            <input type="checkbox" name="claim_type" value="{{ claim_type }}"
+                                {% if claim_type in selected_claim_types %}checked{% endif %}>
+                            {{ claim_type }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
 
-    <div class="filter-group">
-        <button class="filter-toggle" type="button" onclick="toggleFilter('insurance-disease-filter')">
-            Disease
-        </button>
-        <div id="insurance-disease-filter" class="filter-content open">
-            <select name="disease" class="filter-input">
-                <option value="All" {% if selected_disease == "All" %}selected{% endif %}>All Diseases</option>
-                {% for disease in insurance_diseases %}
-                <option value="{{ disease }}" {% if disease == selected_disease %}selected{% endif %}>
-                    {{ disease }}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
+                <div class="filter-group">
+                    <button class="filter-toggle" type="button" onclick="toggleFilter('insurance-disease-filter')">
+                        Disease
+                    </button>
+                    <div id="insurance-disease-filter" class="filter-content open">
+                        <select name="disease" class="filter-input">
+                            <option value="All" {% if selected_disease == "All" %}selected{% endif %}>All Diseases</option>
+                            {% for disease in insurance_diseases %}
+                            <option value="{{ disease }}" {% if disease == selected_disease %}selected{% endif %}>
+                                {{ disease }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
 
-    <div class="filter-actions">
-        <button type="submit" class="filter-apply-btn">Apply Filter</button>
-        <a href="/insurance-dashboard" class="filter-reset-btn">Reset All</a>
-    </div>
-</form>
-{% endif %}
+                <div class="filter-actions">
+                    <button type="submit" class="filter-apply-btn">Apply Filter</button>
+                    <a href="/insurance-dashboard" class="filter-reset-btn">Reset All</a>
+                </div>
+            </form>
+            {% endif %}
 
             {% if page_type == "pharma" %}
             <form method="GET" action="/pharma-dashboard">
@@ -105,20 +105,20 @@
                 </div>
 
                 <div class="filter-group">
-    <button class="filter-toggle" type="button" onclick="toggleFilter('disease-filter')">
-        Disease
-    </button>
-    <div id="disease-filter" class="filter-content open">
-        <select name="disease" class="filter-input">
-            <option value="All" {% if selected_disease == "All" %}selected{% endif %}>All Diseases</option>
-            {% for disease in disease_list %}
-            <option value="{{ disease }}" {% if disease == selected_disease %}selected{% endif %}>
-                {{ disease }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-</div>
+                    <button class="filter-toggle" type="button" onclick="toggleFilter('disease-filter')">
+                        Disease
+                    </button>
+                    <div id="disease-filter" class="filter-content open">
+                        <select name="disease" class="filter-input">
+                            <option value="All" {% if selected_disease == "All" %}selected{% endif %}>All Diseases</option>
+                            {% for disease in disease_list %}
+                            <option value="{{ disease }}" {% if disease == selected_disease %}selected{% endif %}>
+                                {{ disease }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
 
                 <div class="filter-group">
                     <button class="filter-toggle" type="button" onclick="toggleFilter('forecast-filter')">
@@ -159,12 +159,110 @@
     </main>
 </div>
 
+<div id="chatbot-button" onclick="toggleChat()">💬</div>
+
+<div id="chatbot-box">
+    <div class="chat-header">NEXOR AI</div>
+
+    <div id="chat-body">
+        <div class="chat-msg bot-msg">
+            Hi 👋 I’m <b>NEXOR AI</b>, your healthcare analytics assistant. Ask me about claims, payer performance, disease trends, or forecasts.
+        </div>
+    </div>
+
+    <input
+        type="text"
+        id="chat-input"
+        placeholder="Ask NEXOR AI a question..."
+        onkeypress="handleKey(event)"
+    >
+</div>
+
 <script>
 function toggleFilter(id) {
     const el = document.getElementById(id);
     if (el) {
         el.classList.toggle("open");
     }
+}
+
+function toggleChat() {
+    const box = document.getElementById("chatbot-box");
+    if (!box) return;
+
+    if (box.style.display === "block") {
+        box.style.display = "none";
+    } else {
+        box.style.display = "block";
+    }
+}
+
+function handleKey(e) {
+    if (e.key !== "Enter") return;
+
+    const inputEl = document.getElementById("chat-input");
+    const chatBody = document.getElementById("chat-body");
+
+    if (!inputEl || !chatBody) return;
+
+    const input = inputEl.value.trim();
+    if (!input) return;
+
+    chatBody.innerHTML += `<div class="chat-msg user-msg"><b>You:</b> ${input}</div>`;
+    inputEl.value = "";
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    fetch("/ask", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: input })
+    })
+    .then(res => res.json())
+    .then(data => {
+        chatBody.innerHTML += `<div class="chat-msg bot-msg"><b>NEXOR AI:</b> ${data.response}</div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+    })
+    .catch(error => {
+        chatBody.innerHTML += `<div class="chat-msg bot-msg"><b>NEXOR AI:</b> Something went wrong.</div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+        console.error(error);
+    });
+}
+
+function handleEmbeddedKey(e) {
+    if (e.key !== "Enter") return;
+
+    const inputEl = document.getElementById("embedded-chat-input");
+    const chatBody = document.getElementById("embedded-chat-body");
+
+    if (!inputEl || !chatBody) return;
+
+    const input = inputEl.value.trim();
+    if (!input) return;
+
+    chatBody.innerHTML += `<div class="chat-msg user-msg"><b>You:</b> ${input}</div>`;
+    inputEl.value = "";
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    fetch("/ask", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: input })
+    })
+    .then(res => res.json())
+    .then(data => {
+        chatBody.innerHTML += `<div class="chat-msg bot-msg"><b>NEXOR AI:</b> ${data.response}</div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+    })
+    .catch(error => {
+        chatBody.innerHTML += `<div class="chat-msg bot-msg"><b>NEXOR AI:</b> Something went wrong.</div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+        console.error(error);
+    });
 }
 </script>
 

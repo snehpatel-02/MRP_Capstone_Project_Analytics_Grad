@@ -33,9 +33,11 @@ encounters["ENCOUNTERCLASS"] = encounters["ENCOUNTERCLASS"].fillna("Unknown")
 encounters["START_DT"] = pd.to_datetime(
     encounters.get("START"), errors="coerce", utc=True
 ).dt.tz_localize(None)
+
 encounters["TOTAL_CLAIM_COST"] = pd.to_numeric(
     encounters.get("TOTAL_CLAIM_COST"), errors="coerce"
 ).fillna(0)
+
 encounters["PAYER_COVERAGE"] = pd.to_numeric(
     encounters.get("PAYER_COVERAGE"), errors="coerce"
 ).fillna(0)
@@ -58,7 +60,9 @@ sarima_forecast_master["ForecastInsuranceClaimAmount"] = pd.to_numeric(
     sarima_forecast_master["ForecastInsuranceClaimAmount"], errors="coerce"
 ).fillna(0)
 
-forecast_df["MonthStart"] = pd.to_datetime(forecast_df["MonthStart"], errors="coerce")
+forecast_df["MonthStart"] = pd.to_datetime(
+    forecast_df["MonthStart"], errors="coerce"
+)
 forecast_df["ForecastClaimCost"] = pd.to_numeric(
     forecast_df["ForecastClaimCost"], errors="coerce"
 ).fillna(0)
@@ -97,7 +101,9 @@ def short_label(text, keep=12):
 # -----------------------------
 # SIDEBAR OPTIONS
 # -----------------------------
-insurance_payer_values = sorted(encounters["PAYER"].dropna().astype(str).unique().tolist())
+insurance_payer_values = sorted(
+    encounters["PAYER"].dropna().astype(str).unique().tolist()
+)
 insurance_payer_options = [
     {"value": p, "label": short_label(p, keep=12)} for p in insurance_payer_values
 ]
@@ -105,9 +111,11 @@ insurance_payer_options = [
 insurance_claim_types = sorted(
     encounters["ENCOUNTERCLASS"].dropna().astype(str).unique().tolist()
 )
+
 insurance_diseases = sorted(
     conditions["DESCRIPTION"].dropna().astype(str).unique().tolist()
 )
+
 pharma_diseases = sorted(
     disease_actual_master["DISEASE"].dropna().astype(str).unique().tolist()
 )
@@ -166,11 +174,11 @@ def insurance_dashboard():
         end_date=end_date
     )
 
-    # KPIs
+    # KPI values
     total_claims = f"{len(filtered_encounters):,}"
     total_actual = f"{filtered_encounters['TOTAL_CLAIM_COST'].sum():,.2f}"
 
-    forecast_plot_df = apply_date_filter(
+    base_forecast_df = apply_date_filter(
         forecast_df.copy(),
         "MonthStart",
         start_date=start_date,
@@ -188,9 +196,8 @@ def insurance_dashboard():
             start_date=start_date,
             end_date=end_date
         )
-        total_forecast = (
-            f"{insurance_disease_forecast['ForecastInsuranceClaimAmount'].sum():,.2f}"
-        )
+
+        total_forecast = f"{insurance_disease_forecast['ForecastInsuranceClaimAmount'].sum():,.2f}"
         forecast_plot_df = insurance_disease_forecast.rename(
             columns={
                 "MonthStart": "Month",
@@ -198,22 +205,25 @@ def insurance_dashboard():
             }
         )[["Month", "Forecast"]].sort_values("Month")
     else:
-        total_forecast = f"{forecast_plot_df['ForecastClaimCost'].sum():,.2f}"
-        forecast_plot_df = forecast_plot_df.rename(
-            columns={"MonthStart": "Month", "ForecastClaimCost": "Forecast"}
+        total_forecast = f"{base_forecast_df['ForecastClaimCost'].sum():,.2f}"
+        forecast_plot_df = base_forecast_df.rename(
+            columns={
+                "MonthStart": "Month",
+                "ForecastClaimCost": "Forecast"
+            }
         )[["Month", "Forecast"]].sort_values("Month")
 
     # Actual monthly trend
     actual_plot_df = (
         filtered_encounters.dropna(subset=["START_DT"])
-        .groupby(filtered_encounters["START_DT"].dt.to_period("M"))["TOTAL_CLAIM_COST"]
+        .assign(MonthPeriod=filtered_encounters["START_DT"].dt.to_period("M"))
+        .groupby("MonthPeriod")["TOTAL_CLAIM_COST"]
         .sum()
         .reset_index()
     )
 
     if not actual_plot_df.empty:
-        actual_plot_df["START_DT"] = actual_plot_df["START_DT"].astype(str)
-        actual_plot_df["Month"] = pd.to_datetime(actual_plot_df["START_DT"])
+        actual_plot_df["Month"] = pd.to_datetime(actual_plot_df["MonthPeriod"].astype(str))
         actual_plot_df.rename(columns={"TOTAL_CLAIM_COST": "Actual"}, inplace=True)
         actual_plot_df = actual_plot_df[["Month", "Actual"]].sort_values("Month")
     else:
@@ -227,8 +237,8 @@ def insurance_dashboard():
             y=actual_plot_df["Actual"],
             mode="lines+markers",
             name="Actual",
-            line=dict(width=3, color="#4F6BED"),
-            marker=dict(size=5, color="#4F6BED")
+            line=dict(width=2.5, color="#4F6BED"),
+            marker=dict(size=4, color="#4F6BED")
         ))
 
     if not forecast_plot_df.empty:
@@ -237,8 +247,8 @@ def insurance_dashboard():
             y=forecast_plot_df["Forecast"],
             mode="lines+markers",
             name="Forecast",
-            line=dict(width=4, dash="dash", color="#E4572E"),
-            marker=dict(size=8, color="#E4572E")
+            line=dict(width=3, dash="dash", color="#E4572E"),
+            marker=dict(size=5, color="#E4572E")
         ))
 
         forecast_start = forecast_plot_df["Month"].min()
@@ -263,7 +273,7 @@ def insurance_dashboard():
             text="Forecast Starts",
             showarrow=True,
             arrowhead=1,
-            ay=-40
+            ay=-35
         )
 
     trend_fig.update_layout(
@@ -271,8 +281,9 @@ def insurance_dashboard():
         xaxis_title="Month",
         yaxis_title="Claim Cost",
         template="plotly_white",
-        height=500,
+        height=280,
         hovermode="x unified",
+        margin=dict(l=30, r=20, t=60, b=30),
         legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -297,7 +308,11 @@ def insurance_dashboard():
         values="Count",
         title="Claim Type Distribution"
     )
-    claim_type_fig.update_layout(template="plotly_white", height=450)
+    claim_type_fig.update_layout(
+        template="plotly_white",
+        height=240,
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
     claim_type_chart = claim_type_fig.to_html(full_html=False)
 
     # Payer summary and leakage
@@ -331,17 +346,21 @@ def insurance_dashboard():
     )
     leakage_fig.update_layout(
         template="plotly_white",
-        height=450,
+        height=240,
+        margin=dict(l=20, r=20, t=60, b=20),
         yaxis=dict(categoryorder="total ascending")
     )
     leakage_chart = leakage_fig.to_html(full_html=False)
 
-    payer_table = payer_summary.rename(columns={
+    payer_table_df = payer_summary.rename(columns={
         "Total_Claim_Cost": "Total Claim Cost",
         "Coverage_Amount": "Coverage Amount"
-    }).round(2).to_html(
-        classes="table table-striped table-bordered",
-        index=False
+    }).sort_values("Denied Amount", ascending=False).head(10).round(2)
+
+    payer_table = payer_table_df.to_html(
+        classes="table table-hover table-sm align-middle",
+        index=False,
+        border=0
     )
 
     return render_template(
@@ -404,6 +423,7 @@ def pharma_dashboard():
         .index.tolist()
     )
 
+    # Top disease burden
     burden_df = (
         actual_df2.groupby("DISEASE")["InsuranceClaimAmount"]
         .sum()
@@ -421,24 +441,34 @@ def pharma_dashboard():
     )
     disease_burden_chart_fig.update_layout(
         template="plotly_white",
-        height=450,
+        height=220,
+        margin=dict(l=20, r=20, t=60, b=20),
         yaxis=dict(categoryorder="total ascending")
     )
     disease_burden_chart = disease_burden_chart_fig.to_html(full_html=False)
 
+    # Forecast summary
     forecast_summary = (
         forecast_df2.groupby("DISEASE")["ForecastInsuranceClaimAmount"]
         .sum()
         .reset_index()
-        .sort_values("ForecastInsuranceClaimAmount", ascending=False)
-        .round(2)
         .rename(columns={"ForecastInsuranceClaimAmount": "Forecast"})
-    )
-    forecast_summary_table = forecast_summary.to_html(
-        classes="table table-striped table-bordered",
-        index=False
+        .sort_values("Forecast", ascending=False)
+        .head(8)
+        .round(2)
     )
 
+    forecast_summary["Forecast"] = forecast_summary["Forecast"].apply(
+        lambda x: f"${x:,.0f}"
+    )
+
+    forecast_summary_table = forecast_summary.to_html(
+        classes="table table-hover table-sm align-middle",
+        index=False,
+        border=0
+    )
+
+    # Opportunity matrix
     filtered_encounters = apply_date_filter(
         encounters.copy(),
         "START_DT",
@@ -480,18 +510,28 @@ def pharma_dashboard():
         color="PAYER",
         hover_name="PAYER",
         title="Opportunity Matrix: Revenue Leakage vs Market Exposure",
-        size_max=60
+        size_max=55
     )
-    opportunity_fig.update_layout(template="plotly_white", height=500)
+    opportunity_fig.update_layout(
+        template="plotly_white",
+        height=260,
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
     opportunity_matrix_chart = opportunity_fig.to_html(full_html=False)
 
+    # SARIMA chart
     if selected_disease == "All":
         sarima_target = top_diseases[0] if top_diseases else None
     else:
         sarima_target = selected_disease
 
-    sarima_actual = actual_df2[actual_df2["DISEASE"] == sarima_target].sort_values("MonthStart")
-    sarima_future = forecast_df2[forecast_df2["DISEASE"] == sarima_target].sort_values("MonthStart")
+    sarima_actual = actual_df2[
+        actual_df2["DISEASE"] == sarima_target
+    ].sort_values("MonthStart")
+
+    sarima_future = forecast_df2[
+        forecast_df2["DISEASE"] == sarima_target
+    ].sort_values("MonthStart")
 
     sarima_fig = go.Figure()
 
@@ -501,7 +541,7 @@ def pharma_dashboard():
             y=sarima_actual["InsuranceClaimAmount"],
             mode="lines",
             name="Historical Demand",
-            line=dict(width=3, color="#0F2D5C")
+            line=dict(width=2.5, color="#0F2D5C")
         ))
 
     if forecast_view in ["both", "forecast"]:
@@ -510,7 +550,7 @@ def pharma_dashboard():
             y=sarima_future["ForecastInsuranceClaimAmount"],
             mode="lines",
             name="SARIMA Forecast",
-            line=dict(width=3, color="#25C2A0")
+            line=dict(width=2.5, color="#25C2A0")
         ))
 
     sarima_fig.update_layout(
@@ -518,8 +558,9 @@ def pharma_dashboard():
         xaxis_title="Month",
         yaxis_title="Value",
         template="plotly_white",
-        height=500,
-        hovermode="x unified"
+        height=260,
+        hovermode="x unified",
+        margin=dict(l=20, r=20, t=60, b=20)
     )
     sarima_chart = sarima_fig.to_html(full_html=False)
 

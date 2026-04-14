@@ -10,12 +10,12 @@
 <div class="pharma-dashboard-page">
 
     {% if selected_disease and selected_disease != "All" %}
-    <div class="dashboard-card compact-card mb-3">
+    <div class="dashboard-card compact-card mb-2">
         <p class="mb-0"><strong>Active Disease Filter:</strong> {{ selected_disease }}</p>
     </div>
     {% endif %}
 
-    <div class="row g-3 mb-3">
+    <div class="row g-2 mb-2">
         <div class="col-md-4">
             <div class="kpi-card compact-kpi kpi-purple">
                 <div class="kpi-label light-label">Total Disease Records</div>
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div class="row g-3 mb-3">
+    <div class="row g-2 mb-2">
         <div class="col-lg-6">
             <div class="dashboard-card compact-chart-card h-100">
                 <div class="card-header-row">
@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <div class="row g-3 mb-3">
+    <div class="row g-2 mb-2">
         <div class="col-lg-5">
             <div class="dashboard-card compact-chart-card h-100">
                 <div class="card-header-row">
@@ -89,8 +89,8 @@
             </div>
         </div>
 
-        <div class="col-lg-7">
-            <div class="dashboard-card compact-table-card h-100">
+        <div class="col-lg-7 d-flex">
+            <div class="dashboard-card compact-table-card h-100 w-100">
                 <div class="card-header-row">
                     <div>
                         <h4 class="section-title mb-1">Forecast Summary</h4>
@@ -106,13 +106,7 @@
         </div>
     </div>
 
-    <div class="dashboard-card compact-card insight-strip">
-        <h4 class="section-title mb-2">Key Insight</h4>
-        <p class="section-text mb-0">
-            Disease-level forecasting helps pharma teams identify future demand concentration areas,
-            prioritize therapeutic focus, and align market access strategy with emerging burden patterns.
-        </p>
-    </div>
+ 
 
 </div>
 

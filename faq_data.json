@@ -1,4 +1,111 @@
-[
+[  
+    {
+      "question": "Where are we losing the most potential revenue across diseases?",
+      "answer": "The biggest revenue loss comes from diseases with high claim cost and large uncovered amounts."
+    },
+    {
+      "question": "What areas show high cost but low payer support?",
+      "answer": "These are diseases where total claim cost is high but coverage percentage stays below average."
+    },
+    {
+      "question": "Which disease categories are underperforming despite high demand?",
+      "answer": "Diseases with strong claim volume but weak reimbursement are underperforming."
+    },
+    {
+      "question": "Where is the highest revenue leakage occurring in the system?",
+      "answer": "Revenue leakage is highest in disease areas with high billed cost and low payer contribution."
+    },
+    {
+      "question": "Which payer-disease combination is least profitable?",
+      "answer": "The least profitable combination is the one with high claims and the lowest effective coverage."
+    },
+    {
+      "question": "Which diseases are driving cost without proportional coverage?",
+      "answer": "These are diseases where claim costs are rising faster than payer reimbursement."
+    },
+    {
+      "question": "Which payer is underperforming in terms of coverage efficiency?",
+      "answer": "The underperforming payer is the one with the lowest average coverage across major diseases."
+    },
+    {
+      "question": "Where should insurance teams focus to improve claim approvals?",
+      "answer": "Focus on disease segments with low coverage and high claim burden."
+    },
+    {
+      "question": "Which segments indicate high financial risk for payers?",
+      "answer": "High-risk segments are those with rising claims, high treatment cost, and weak coverage."
+    },
+    {
+      "question": "Which areas require renegotiation with payers?",
+      "answer": "Disease segments with high leakage and consistently low coverage should be renegotiated first."
+    },
+
+    {
+      "question": "Which diseases present the highest untapped market opportunity?",
+      "answer": "Diseases with high claim burden and low coverage show the strongest untapped market opportunity."
+    },
+    {
+      "question": "Which disease segments should we prioritize for maximum ROI?",
+      "answer": "Prioritize disease segments with high volume, rising costs, and lower payer support."
+    },
+    {
+      "question": "Which diseases should pharma companies target for expansion?",
+      "answer": "Target diseases with high burden, growing demand, and weaker payer support."
+    },
+    {
+      "question": "Which disease segments indicate strong long-term market potential?",
+      "answer": "Diseases with sustained growth, high claim cost, and moderate coverage gaps show strong long-term potential."
+    },
+    {
+      "question": "Which disease patterns suggest emerging market opportunities?",
+      "answer": "Emerging opportunities appear where disease claims and treatment costs are both trending upward."
+    },
+    {
+      "question": "Which disease segments combine high cost, low coverage, and high growth?",
+      "answer": "These are the disease segments with the strongest mix of burden, reimbursement risk, and future opportunity."
+    },
+    {
+      "question": "Where should we focus to maximize both coverage and profitability?",
+      "answer": "Focus on high-cost disease segments where better coverage can also reduce leakage."
+    },
+    {
+      "question": "What strategic actions can improve both revenue and patient outcomes?",
+      "answer": "Improve coverage, reduce leakage, and prioritize high-burden diseases with growing demand."
+    }
+  ,
+    {
+      "question": "Which diseases are expected to grow the fastest in the next 6 months?",
+      "answer": "The fastest-growing diseases are the ones with the strongest positive forecast over the next 6 months."
+    },
+    {
+      "question": "Where is future drug demand expected to increase significantly?",
+      "answer": "Future drug demand is expected to rise in diseases with strong upward forecast trends."
+    },
+    {
+      "question": "Which therapeutic areas show consistent growth trends?",
+      "answer": "Therapeutic areas with steady increases in claim volume show the most consistent growth."
+    },
+    {
+      "question": "How can pharma align production with predicted disease demand?",
+      "answer": "Use forecasted disease trends to increase production where future claim demand is rising."
+    },
+    {
+      "question": "What trends indicate rising healthcare demand in specific diseases?",
+      "answer": "Rising claim counts and increasing monthly costs indicate growing healthcare demand."
+    },
+    {
+      "question": "Where should we invest based on future claim forecasts?",
+      "answer": "Invest in diseases with high projected growth, increasing cost burden, and low current coverage."
+    },
+    {
+      "question": "How can forecasting help reduce future financial risks?",
+      "answer": "Forecasting highlights future high-cost disease trends early so teams can act before losses grow."
+    },
+    {
+      "question": "What is the most critical insight from the current data trends?",
+      "answer": "The key insight is which diseases combine high cost, low coverage, and rising future demand."
+    }
+,
   {
     "question": "What is this platform used for?",
     "answer": "This platform helps insurance and pharma teams analyze healthcare claims, payer performance, disease burden, and forecast trends to support data-driven decision making."
@@ -58,5 +165,168 @@
   {
     "question": "What is the final value of this platform?",
     "answer": "The platform transforms complex healthcare data into clear insights, enabling faster and smarter decisions without relying on manual analysis."
+  },
+  
+  {
+    "question": "What does Total Disease Records represent?",
+    "answer": "It represents the total number of disease-related records captured in the dataset across all patients and time periods."
+  },
+  {
+    "question": "What does Total Actual Disease Claims indicate?",
+    "answer": "It shows the total monetary value of historical claims recorded for all diseases."
+  },
+  {
+    "question": "What does Total Forecast Disease Claims mean?",
+    "answer": "It represents the predicted future claim cost based on time-series forecasting models like SARIMA."
+  },
+  {
+    "question": "What does Total Claims mean in the insurance dashboard?",
+    "answer": "It shows the total number of claims processed across all payers and claim types."
+  },
+  {
+    "question": "What does Total Actual Claim Cost represent?",
+    "answer": "It indicates the total historical cost of all insurance claims processed."
+  },
+  {
+    "question": "What does Total Forecast Claim Cost represent?",
+    "answer": "It shows the predicted future claim cost based on past trends and forecasting models."
+  },
+
+  {
+    "question": "What does the SARIMA Monthly Demand Forecast show?",
+    "answer": "It shows historical disease demand along with predicted future demand using SARIMA time-series forecasting."
+  },
+  {
+    "question": "What does the forecast line represent in the demand chart?",
+    "answer": "The forecast line represents predicted future values based on historical patterns in the data."
+  },
+  {
+    "question": "Why is forecasting important in this dashboard?",
+    "answer": "Forecasting helps anticipate future demand and costs, allowing better planning and resource allocation."
+  },
+  {
+    "question": "How can users interpret sudden spikes in the forecast chart?",
+    "answer": "Spikes indicate periods of increased demand or cost, which may require further investigation or planning."
+  },
+
+  {
+    "question": "What does the Opportunity Matrix represent?",
+    "answer": "It shows the relationship between claim exposure and revenue leakage across payers to identify high-impact opportunities."
+  },
+  {
+    "question": "How do we identify high opportunity areas in the matrix?",
+    "answer": "Areas with high claim exposure and high revenue leakage represent the most critical opportunities."
+  },
+  {
+    "question": "What does bubble size indicate in the Opportunity Matrix?",
+    "answer": "Bubble size represents the magnitude of impact, such as total claims or cost contribution."
+  },
+  {
+    "question": "How should teams use the Opportunity Matrix?",
+    "answer": "Teams should focus on large bubbles in high leakage areas to maximize improvements."
+  },
+
+  {
+    "question": "What does the Claim Type Distribution chart show?",
+    "answer": "It shows how different claim types contribute to the total claim cost."
+  },
+  {
+    "question": "Which claim type contributes the most to total cost?",
+    "answer": "The claim type with the largest percentage slice in the chart contributes the most."
+  },
+  {
+    "question": "Why is claim type distribution important?",
+    "answer": "It helps identify which types of claims are driving the highest costs."
+  },
+
+  {
+    "question": "What does the Top Payers by Revenue Leakage chart show?",
+    "answer": "It highlights payers where the highest denied or unpaid amounts are occurring."
+  },
+  {
+    "question": "How can teams reduce revenue leakage?",
+    "answer": "By analyzing high-leakage payers and improving claim approval processes or renegotiating terms."
+  },
+  {
+    "question": "Why is revenue leakage important to monitor?",
+    "answer": "It directly impacts profitability and indicates inefficiencies in reimbursement."
+  },
+
+  {
+    "question": "What does the Claim Cost Trend (Actual vs Forecast) show?",
+    "answer": "It compares historical claim costs with predicted future costs over time."
+  },
+  {
+    "question": "What does the forecast start marker indicate?",
+    "answer": "It shows the point where historical data ends and prediction begins."
+  },
+  {
+    "question": "How can users use the claim trend chart?",
+    "answer": "They can analyze cost growth patterns and prepare for future increases."
+  },
+
+  {
+    "question": "What does the Top Disease Burden chart represent?",
+    "answer": "It shows diseases with the highest historical claim cost impact."
+  },
+  {
+    "question": "Why is identifying top disease burden important?",
+    "answer": "It helps prioritize high-cost diseases for intervention and planning."
+  },
+  {
+    "question": "Which diseases should be prioritized for cost control?",
+    "answer": "Diseases with the highest claim burden and fastest growth should be prioritized."
+  },
+
+  {
+    "question": "What does the Forecast Summary table show?",
+    "answer": "It lists predicted claim amounts for major diseases based on forecasting models."
+  },
+  {
+    "question": "How can teams use the Forecast Summary?",
+    "answer": "They can identify which diseases will drive future costs and plan accordingly."
+  },
+
+  {
+    "question": "What does the Payer Performance Summary table include?",
+    "answer": "It includes total claims, claim cost, coverage amount, denied amount, and coverage percentage for each payer."
+  },
+  {
+    "question": "How can users identify the best performing payer?",
+    "answer": "The best payer typically has high coverage percentage and low denied amount."
+  },
+  {
+    "question": "How can users identify the worst performing payer?",
+    "answer": "The worst payer has low coverage percentage and high denied amount."
+  },
+
+  {
+    "question": "What is the purpose of the date range filter?",
+    "answer": "It allows users to analyze data for a specific time period."
+  },
+  {
+    "question": "How does the disease filter work?",
+    "answer": "It allows users to focus analysis on a specific disease."
+  },
+  {
+    "question": "What does the forecast view filter do?",
+    "answer": "It lets users toggle between actual data and forecasted data."
+  },
+  {
+    "question": "Why are filters important in this dashboard?",
+    "answer": "They allow users to customize analysis and focus on specific segments."
+  },
+
+  {
+    "question": "What insights can be derived from combining all visuals?",
+    "answer": "Users can understand cost drivers, identify leakage, and predict future trends in one view."
+  },
+  {
+    "question": "How does this dashboard support strategic planning?",
+    "answer": "It provides both historical insights and future forecasts to guide decisions."
+  },
+  {
+    "question": "What is the biggest advantage of combining insurance and pharma insights?",
+    "answer": "It allows end-to-end visibility from claim cost to disease demand and market opportunity."
   }
 ]
